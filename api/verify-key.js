@@ -17,6 +17,28 @@ async function getGitHubFile(owner, repo, path, token) {
     return await response.json();
 }
 
+// Fungsi untuk update file di GitHub
+async function updateGitHubFile(owner, repo, path, content, message, token, sha) {
+    const response = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/contents/${path}`,
+        {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: message,
+                content: Buffer.from(content).toString('base64'),
+                sha: sha
+            })
+        }
+    );
+    
+    return await response.json();
+}
+
 export default async function handler(req, res) {
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -64,7 +86,32 @@ export default async function handler(req, res) {
         }
         
         const content = Buffer.from(file.content, 'base64').toString('utf-8');
-        const keys = JSON.parse(content);
+        let keys = JSON.parse(content);
+        
+        // ===== AUTO CLEANUP EXPIRED KEYS =====
+        const now = new Date();
+        const initialCount = keys.length;
+        
+        const activeKeys = keys.filter(keyData => {
+            if (!keyData.expiresAt) return true; // Permanent keys
+            return new Date(keyData.expiresAt) > now;
+        });
+        
+        // Update file jika ada key yang expired
+        if (activeKeys.length < initialCount) {
+            const deletedCount = initialCount - activeKeys.length;
+            await updateGitHubFile(
+                GITHUB_OWNER,
+                GITHUB_REPO,
+                filePath,
+                JSON.stringify(activeKeys, null, 2),
+                `Auto cleanup: Removed ${deletedCount} expired key(s)`,
+                GITHUB_TOKEN,
+                file.sha
+            );
+            keys = activeKeys; // Update keys untuk verifikasi
+        }
+        // ===== END AUTO CLEANUP =====
         
         // Find key
         const keyData = keys.find(k => k.key === key && k.username === username);
@@ -76,10 +123,10 @@ export default async function handler(req, res) {
             });
         }
         
-        // Check expiry
+        // Check expiry (double check meskipun sudah di-cleanup)
         if (keyData.expiresAt) {
             const expiryDate = new Date(keyData.expiresAt);
-            if (expiryDate < new Date()) {
+            if (expiryDate < now) {
                 return res.status(200).json({ 
                     valid: false,
                     error: 'Key sudah expired' 
