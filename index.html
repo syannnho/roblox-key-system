@@ -25,7 +25,7 @@
             background: white;
             border-radius: 20px;
             padding: 40px;
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             animation: slideUp 0.5s ease;
@@ -56,6 +56,38 @@
         .header p {
             color: #666;
             font-size: 0.95em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .form-group {
@@ -106,14 +138,18 @@
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .btn:active {
-            transform: translateY(0);
-        }
-
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .btn-renew {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .btn-renew:hover {
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.4);
         }
 
         .message {
@@ -122,11 +158,6 @@
             margin-top: 20px;
             display: none;
             animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .message.show {
@@ -145,10 +176,10 @@
             border: 2px solid #f5c6cb;
         }
 
-        .message.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 2px solid #bee5eb;
+        .message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
         }
 
         .key-display {
@@ -176,7 +207,38 @@
             font-weight: bold;
             word-break: break-all;
             border: 2px solid #e0e0e0;
-            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .key-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .key-info p {
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .key-info strong {
+            color: #333;
+        }
+
+        .expiry-timer {
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .expiry-warning {
+            color: #d97706;
+        }
+
+        .expiry-danger {
+            color: #dc2626;
         }
 
         .copy-btn {
@@ -188,7 +250,6 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
             transition: background 0.3s;
         }
 
@@ -209,124 +270,220 @@
             font-size: 0.9em;
             margin-bottom: 5px;
         }
-
-        .info-box p:last-child {
-            margin-bottom: 0;
-        }
-
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔑 Key Generator</h1>
-            <p>Generate key untuk Roblox Script</p>
+            <h1>🔑 Key System</h1>
+            <p>Generate & Manage Your Keys</p>
         </div>
 
-        <div class="info-box">
-            <p><strong>📌 Informasi:</strong></p>
-            <p>• Masukkan username Roblox yang valid</p>
-            <p>• Pilih durasi key yang diinginkan</p>
-            <p>• Key akan tersimpan otomatis di GitHub</p>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('generate')">Generate Key</button>
+            <button class="tab" onclick="switchTab('check')">Check Key</button>
         </div>
 
-        <form id="keyForm">
-            <div class="form-group">
-                <label for="username">Username Roblox</label>
-                <input 
-                    type="text" 
-                    id="username" 
-                    placeholder="Masukkan username Roblox..." 
-                    required
-                    pattern="[A-Za-z0-9_]+"
-                    title="Username hanya boleh berisi huruf, angka, dan underscore"
-                >
+        <!-- GENERATE TAB -->
+        <div id="generateTab" class="tab-content active">
+            <div class="info-box">
+                <p><strong>📌 Informasi:</strong></p>
+                <p>• Masukkan username Roblox yang valid</p>
+                <p>• Pilih durasi key yang diinginkan</p>
+                <p>• Key akan tersimpan otomatis di GitHub</p>
             </div>
 
-            <div class="form-group">
-                <label for="duration">Durasi Key</label>
-                <select id="duration" required>
-                    <option value="">Pilih durasi...</option>
-                    <option value="1">1 Day</option>
-                    <option value="3">3 Days</option>
-                    <option value="7">7 Days</option>
-                    <option value="30">30 Days</option>
-                    <option value="permanent">Permanent</option>
-                </select>
+            <form id="keyForm">
+                <div class="form-group">
+                    <label for="username">Username Roblox</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        placeholder="Masukkan username Roblox..." 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="duration">Durasi Key</label>
+                    <select id="duration" required>
+                        <option value="">Pilih durasi...</option>
+                        <option value="1">1 Hour (Testing)</option>
+                        <option value="24">1 Day</option>
+                        <option value="72">3 Days</option>
+                        <option value="168">7 Days</option>
+                        <option value="720">30 Days</option>
+                        <option value="permanent">Permanent</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    Generate Key
+                </button>
+            </form>
+
+            <div id="message" class="message"></div>
+            <div id="keyDisplay" style="display: none;"></div>
+        </div>
+
+        <!-- CHECK KEY TAB -->
+        <div id="checkTab" class="tab-content">
+            <div class="info-box">
+                <p><strong>📌 Check & Renew:</strong></p>
+                <p>• Cek status key dan waktu remaining</p>
+                <p>• Renew key jika sisa waktu > 1 jam</p>
+                <p>• Key expired tidak bisa di-renew</p>
             </div>
 
-            <button type="submit" class="btn" id="submitBtn">
-                Generate Key
-            </button>
-        </form>
+            <form id="checkForm">
+                <div class="form-group">
+                    <label for="checkUsername">Username Roblox</label>
+                    <input 
+                        type="text" 
+                        id="checkUsername" 
+                        placeholder="Masukkan username Roblox..." 
+                        required
+                    >
+                </div>
 
-        <div id="message" class="message"></div>
-        <div id="keyDisplay" style="display: none;"></div>
+                <div class="form-group">
+                    <label for="checkKey">Key</label>
+                    <input 
+                        type="text" 
+                        id="checkKey" 
+                        placeholder="Paste key kamu disini..." 
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn">
+                    Check Key
+                </button>
+            </form>
+
+            <div id="checkMessage" class="message"></div>
+            <div id="checkResult" style="display: none;"></div>
+        </div>
     </div>
 
     <script>
-        const form = document.getElementById('keyForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const messageDiv = document.getElementById('message');
-        const keyDisplay = document.getElementById('keyDisplay');
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'generate') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('generateTab').classList.add('active');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('checkTab').classList.add('active');
+            }
+        }
 
-        form.addEventListener('submit', async (e) => {
+        // Generate Key Form
+        document.getElementById('keyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const username = document.getElementById('username').value.trim();
             const duration = document.getElementById('duration').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+            const keyDisplay = document.getElementById('keyDisplay');
 
             if (!username || !duration) {
-                showMessage('error', 'Mohon isi semua field!');
+                showMessage('error', 'Mohon isi semua field!', 'message');
                 return;
             }
 
-            // Disable button
             submitBtn.disabled = true;
-            submitBtn.innerHTML = 'Generating Key... <span class="loader"></span>';
+            submitBtn.textContent = 'Generating...';
             
             try {
                 const response = await fetch('/api/generate-key', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, duration })
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    showMessage('success', data.message);
-                    displayKey(data.key, username, duration);
-                    form.reset();
+                    showMessage('success', data.message, 'message');
+                    displayKey(data.key, username, duration, data.expiresAt);
+                    document.getElementById('keyForm').reset();
                 } else {
-                    showMessage('error', data.error || 'Gagal generate key');
+                    showMessage('error', data.error || 'Gagal generate key', 'message');
                 }
             } catch (error) {
-                showMessage('error', 'Terjadi kesalahan: ' + error.message);
+                showMessage('error', 'Terjadi kesalahan: ' + error.message, 'message');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Generate Key';
+                submitBtn.textContent = 'Generate Key';
             }
         });
 
-        function showMessage(type, text) {
+        // Check Key Form
+        document.getElementById('checkForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('checkUsername').value.trim();
+            const key = document.getElementById('checkKey').value.trim();
+
+            if (!username || !key) {
+                showMessage('error', 'Mohon isi semua field!', 'checkMessage');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/verify-key?key=${encodeURIComponent(key)}&username=${encodeURIComponent(username)}`);
+                const data = await response.json();
+
+                if (data.valid) {
+                    displayKeyStatus(data.data, key);
+                } else {
+                    showMessage('error', data.error || 'Key tidak valid', 'checkMessage');
+                    document.getElementById('checkResult').style.display = 'none';
+                }
+            } catch (error) {
+                showMessage('error', 'Terjadi kesalahan: ' + error.message, 'checkMessage');
+            }
+        });
+
+        // Renew Key Function
+        async function renewKey(key, username) {
+            const renewBtn = document.getElementById('renewBtn');
+            renewBtn.disabled = true;
+            renewBtn.textContent = 'Renewing...';
+
+            try {
+                const response = await fetch('/api/renew-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key, username })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('success', data.message, 'checkMessage');
+                    // Refresh key status
+                    setTimeout(() => {
+                        document.getElementById('checkForm').dispatchEvent(new Event('submit'));
+                    }, 1000);
+                } else {
+                    showMessage('error', data.error || 'Gagal renew key', 'checkMessage');
+                }
+            } catch (error) {
+                showMessage('error', 'Terjadi kesalahan: ' + error.message, 'checkMessage');
+            } finally {
+                renewBtn.disabled = false;
+                renewBtn.textContent = '🔄 Renew Key';
+            }
+        }
+
+        function showMessage(type, text, elementId) {
+            const messageDiv = document.getElementById(elementId);
             messageDiv.className = `message ${type} show`;
             messageDiv.textContent = text;
             
@@ -335,21 +492,84 @@
             }, 5000);
         }
 
-        function displayKey(key, username, duration) {
-            const durationText = duration === 'permanent' ? 'Permanent' : `${duration} Day(s)`;
+        function displayKey(key, username, duration, expiresAt) {
+            const durationText = duration === 'permanent' ? 'Permanent' : `${duration} Hour(s)`;
+            const expiryText = expiresAt ? new Date(expiresAt).toLocaleString('id-ID') : 'Never';
             
-            keyDisplay.innerHTML = `
+            document.getElementById('keyDisplay').innerHTML = `
                 <div class="key-display">
                     <h3>✅ Key Berhasil Dibuat!</h3>
                     <div class="key-code" id="keyCode">${key}</div>
                     <button class="copy-btn" onclick="copyKey()">📋 Copy Key</button>
-                    <div style="margin-top: 15px; text-align: center; color: #666; font-size: 0.9em;">
+                    <div class="key-info">
                         <p><strong>Username:</strong> ${username}</p>
                         <p><strong>Durasi:</strong> ${durationText}</p>
+                        <p><strong>Expired:</strong> ${expiryText}</p>
                     </div>
                 </div>
             `;
-            keyDisplay.style.display = 'block';
+            document.getElementById('keyDisplay').style.display = 'block';
+        }
+
+        function displayKeyStatus(keyData, key) {
+            const now = new Date();
+            const expiresAt = keyData.expiresAt ? new Date(keyData.expiresAt) : null;
+            
+            let timeRemaining = '';
+            let canRenew = false;
+            let timerClass = 'expiry-timer';
+            
+            if (expiresAt) {
+                const diffMs = expiresAt - now;
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                
+                if (diffMs > 0) {
+                    timeRemaining = `${diffHours} jam ${diffMins} menit`;
+                    
+                    // Can renew if > 1 hour remaining
+                    canRenew = diffHours >= 1;
+                    
+                    if (diffHours < 1) {
+                        timerClass += ' expiry-danger';
+                    } else if (diffHours < 24) {
+                        timerClass += ' expiry-warning';
+                    }
+                } else {
+                    timeRemaining = 'EXPIRED';
+                    timerClass += ' expiry-danger';
+                }
+            } else {
+                timeRemaining = 'PERMANENT';
+            }
+
+            const renewButton = canRenew ? `
+                <button class="btn btn-renew" id="renewBtn" onclick="renewKey('${key}', '${keyData.username}')">
+                    🔄 Renew Key (+${keyData.duration} Hours)
+                </button>
+            ` : expiresAt ? `
+                <div class="info-box" style="margin-top: 15px;">
+                    <p><strong>⚠️ Cannot Renew:</strong></p>
+                    <p>Renew hanya bisa dilakukan jika sisa waktu lebih dari 1 jam</p>
+                </div>
+            ` : '';
+
+            document.getElementById('checkResult').innerHTML = `
+                <div class="key-display">
+                    <h3>📊 Key Status</h3>
+                    <div class="key-info">
+                        <p><strong>Username:</strong> ${keyData.username}</p>
+                        <p><strong>Key:</strong> <span class="key-code" style="display:inline; padding:5px;">${key}</span></p>
+                        <p><strong>Duration:</strong> ${keyData.duration === 'permanent' ? 'Permanent' : keyData.duration + ' Hours'}</p>
+                        <p><strong>Created:</strong> ${new Date(keyData.createdAt).toLocaleString('id-ID')}</p>
+                        <p><strong>Expires:</strong> ${expiresAt ? expiresAt.toLocaleString('id-ID') : 'Never'}</p>
+                        <p><strong>Time Remaining:</strong> <span class="${timerClass}">${timeRemaining}</span></p>
+                    </div>
+                    ${renewButton}
+                </div>
+            `;
+            document.getElementById('checkResult').style.display = 'block';
+            showMessage('success', 'Key status loaded!', 'checkMessage');
         }
 
         function copyKey() {
