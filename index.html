@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Script Hub - Key Management System</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * {
@@ -44,7 +43,6 @@
             overflow-x: hidden;
         }
 
-        /* Animated Background */
         body::before {
             content: '';
             position: fixed;
@@ -64,7 +62,6 @@
             50% { transform: translate(5%, 5%) rotate(2deg); }
         }
 
-        /* Grid Pattern */
         body::after {
             content: '';
             position: fixed;
@@ -106,7 +103,6 @@
             }
         }
 
-        /* Header */
         .header {
             padding: 40px 40px 30px;
             border-bottom: 1px solid var(--border);
@@ -163,12 +159,10 @@
             font-weight: 400;
         }
 
-        /* Content */
         .content {
             padding: 32px 40px 40px;
         }
 
-        /* Tabs */
         .tabs {
             display: flex;
             gap: 8px;
@@ -232,7 +226,6 @@
             }
         }
 
-        /* Info Box */
         .info-box {
             background: var(--bg-elevated);
             border: 1px solid var(--border);
@@ -283,7 +276,6 @@
             margin-bottom: 0;
         }
 
-        /* Form */
         .form-group {
             margin-bottom: 20px;
         }
@@ -341,7 +333,6 @@
             padding-right: 40px;
         }
 
-        /* Button */
         .btn {
             width: 100%;
             padding: 14px 20px;
@@ -381,6 +372,17 @@
             color: var(--text-secondary);
             cursor: not-allowed;
             transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            box-shadow: none;
         }
 
         .btn-renew {
@@ -437,6 +439,93 @@
         .loader-subtext {
             font-size: 0.9em;
             color: var(--text-secondary);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            animation: toastSlide 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes toastSlide {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.95em;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 0.875em;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success);
+        }
+
+        .toast.error .toast-icon {
+            color: var(--danger);
+        }
+
+        .toast.warning .toast-icon {
+            color: var(--warning);
         }
 
         /* Messages */
@@ -634,8 +723,22 @@
             transform: translateY(-1px);
         }
 
+        .hidden {
+            display: none !important;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
+            .toast-container {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+
+            .toast {
+                min-width: auto;
+            }
+
             .container {
                 border-radius: 16px;
             }
@@ -664,6 +767,9 @@
     </style>
 </head>
 <body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- Loader -->
     <div id="loader" class="loader">
         <div class="loader-content">
@@ -826,14 +932,15 @@
                         <div class="info-box-title">Renew Key Information</div>
                     </div>
                     <div class="info-box-content">
-                        <p>• Extend your active key duration</p>
+                        <p>• Step 1: Enter username to check active key</p>
+                        <p>• Step 2: Select extension duration and renew</p>
                         <p>• Renewal only allowed if remaining time > 1 hour</p>
-                        <p>• Select extension duration</p>
                         <p>• Expired keys cannot be renewed</p>
                     </div>
                 </div>
 
-                <form id="renewForm">
+                <!-- Step 1: Check Username -->
+                <div id="renewStep1">
                     <div class="form-group">
                         <label class="form-label">
                             <i data-lucide="user"></i>
@@ -848,12 +955,20 @@
                         >
                     </div>
 
+                    <button type="button" class="btn" id="checkUsernameBtn" onclick="checkUsername()">
+                        <i data-lucide="search"></i>
+                        <span>Check Username</span>
+                    </button>
+                </div>
+
+                <!-- Step 2: Renew Form (Hidden by default) -->
+                <div id="renewStep2" class="hidden">
                     <div class="form-group">
                         <label class="form-label">
                             <i data-lucide="plus"></i>
                             <span>Extension Duration</span>
                         </label>
-                        <select id="renewDuration" class="form-control" required>
+                        <select id="renewDuration" class="form-control">
                             <option value="">Select extension duration...</option>
                             <option value="1">+1 Hour</option>
                             <option value="24">+1 Day</option>
@@ -863,21 +978,60 @@
                         </select>
                     </div>
 
-                    <button type="submit" class="btn btn-renew">
-                        <i data-lucide="refresh-cw"></i>
-                        <span>Renew Key</span>
-                    </button>
-                </form>
+                    <div style="display: flex; gap: 12px;">
+                        <button type="button" class="btn btn-secondary" onclick="resetRenewForm()" style="flex: 1;">
+                            <i data-lucide="arrow-left"></i>
+                            <span>Back</span>
+                        </button>
+                        <button type="button" class="btn btn-renew" id="renewBtn" onclick="renewKey()" style="flex: 2;">
+                            <i data-lucide="refresh-cw"></i>
+                            <span>Renew Key</span>
+                        </button>
+                    </div>
+                </div>
 
-                <div id="renewMessage" class="message"></div>
                 <div id="renewResult" style="display: none;"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
+
+        let currentUserKey = null;
+
+        // Toast Notification System
+        function showToast(type, title, message, duration = 5000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'x-circle',
+                warning: 'alert-triangle',
+                info: 'info'
+            };
+            
+            toast.innerHTML = `
+                <i data-lucide="${icons[type]}" class="toast-icon"></i>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i data-lucide="x"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                toast.style.animation = 'toastSlide 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
 
         // Tab Switching
         function switchTab(tab) {
@@ -887,6 +1041,11 @@
             const tabs = { 'generate': 0, 'check': 1, 'renew': 2 };
             document.querySelectorAll('.tab')[tabs[tab]].classList.add('active');
             document.getElementById(tab + 'Tab').classList.add('active');
+            
+            // Reset renew form when switching away
+            if (tab !== 'renew') {
+                resetRenewForm();
+            }
         }
 
         // Loader
@@ -900,7 +1059,7 @@
             document.getElementById('loader').classList.remove('show');
         }
 
-        // Messages
+        // Messages (for inline display)
         function showMessage(type, text, elementId) {
             const messageDiv = document.getElementById(elementId);
             const icons = {
@@ -919,6 +1078,101 @@
             setTimeout(() => messageDiv.classList.remove('show'), 5000);
         }
 
+        // Check Username for Renew
+        async function checkUsername() {
+            const username = document.getElementById('renewUsername').value.trim();
+            
+            if (!username) {
+                showToast('error', 'Error', 'Please enter your Roblox username');
+                return;
+            }
+
+            showLoader('Checking Username...', 'Looking for active key...');
+
+            try {
+                // Get all keys and find user's active key
+                const response = await fetch(`/api/get-user-key?username=${encodeURIComponent(username)}`);
+                const data = await response.json();
+
+                hideLoader();
+
+                if (response.ok && data.found) {
+                    // User has active key
+                    currentUserKey = data.keyData;
+                    
+                    // Check if can renew (>1 hour remaining)
+                    const now = new Date();
+                    const expiresAt = new Date(currentUserKey.expiresAt);
+                    const hoursRemaining = (expiresAt - now) / (1000 * 60 * 60);
+                    
+                    if (hoursRemaining < 1) {
+                        showToast('error', 'Cannot Renew', 'Key can only be renewed if remaining time > 1 hour. Current remaining: ' + Math.round(hoursRemaining * 60) + ' minutes');
+                        return;
+                    }
+                    
+                    // Show step 2
+                    document.getElementById('renewStep1').classList.add('hidden');
+                    document.getElementById('renewStep2').classList.remove('hidden');
+                    
+                    showToast('success', 'Username Found', `Active key found! Remaining time: ${Math.floor(hoursRemaining)}h ${Math.floor((hoursRemaining % 1) * 60)}m`);
+                } else {
+                    showToast('error', 'Username Not Found', data.error || 'No active key found for this username');
+                }
+            } catch (error) {
+                hideLoader();
+                showToast('error', 'Error', 'Failed to check username: ' + error.message);
+            }
+        }
+
+        // Reset Renew Form
+        function resetRenewForm() {
+            document.getElementById('renewStep1').classList.remove('hidden');
+            document.getElementById('renewStep2').classList.add('hidden');
+            document.getElementById('renewResult').style.display = 'none';
+            document.getElementById('renewDuration').value = '';
+            currentUserKey = null;
+        }
+
+        // Renew Key
+        async function renewKey() {
+            const duration = document.getElementById('renewDuration').value;
+            const username = document.getElementById('renewUsername').value.trim();
+
+            if (!duration) {
+                showToast('warning', 'Select Duration', 'Please select extension duration');
+                return;
+            }
+
+            showLoader('Renewing Key...', 'Extending key duration...');
+
+            try {
+                const response = await fetch('/api/renew-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, duration })
+                });
+
+                const data = await response.json();
+                hideLoader();
+
+                if (response.ok) {
+                    showToast('success', 'Key Renewed!', data.message);
+                    displayRenewResult(data);
+                    
+                    // Reset form after 3 seconds
+                    setTimeout(() => {
+                        resetRenewForm();
+                        document.getElementById('renewUsername').value = '';
+                    }, 3000);
+                } else {
+                    showToast('error', 'Renewal Failed', data.error || 'Failed to renew key');
+                }
+            } catch (error) {
+                hideLoader();
+                showToast('error', 'Error', 'Error: ' + error.message);
+            }
+        }
+
         // Generate Key
         document.getElementById('keyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -927,7 +1181,7 @@
             const duration = document.getElementById('duration').value;
 
             if (!username || !duration) {
-                showMessage('error', 'Please fill all fields!', 'message');
+                showToast('error', 'Incomplete Form', 'Please fill all fields');
                 return;
             }
 
@@ -944,15 +1198,15 @@
                 hideLoader();
 
                 if (response.ok) {
-                    showMessage('success', data.message, 'message');
+                    showToast('success', 'Key Generated!', 'Key has been generated successfully');
                     displayKey(data.key, username, data.duration, data.expiresAtFormatted);
                     document.getElementById('keyForm').reset();
                 } else {
-                    showMessage('error', data.error || 'Failed to generate key', 'message');
+                    showToast('error', 'Generation Failed', data.error || 'Failed to generate key');
                 }
             } catch (error) {
                 hideLoader();
-                showMessage('error', 'Error: ' + error.message, 'message');
+                showToast('error', 'Error', 'Error: ' + error.message);
             }
         });
 
@@ -964,7 +1218,7 @@
             const key = document.getElementById('checkKey').value.trim();
 
             if (!username || !key) {
-                showMessage('error', 'Please fill all fields!', 'checkMessage');
+                showToast('error', 'Incomplete Form', 'Please fill all fields');
                 return;
             }
 
@@ -976,52 +1230,15 @@
                 hideLoader();
 
                 if (data.valid) {
+                    showToast('success', 'Key Valid', 'Key is valid and active');
                     displayKeyStatus(data.data, key);
                 } else {
-                    showMessage('error', data.error || 'Invalid key', 'checkMessage');
+                    showToast('error', 'Invalid Key', data.error || 'Key is not valid');
                     document.getElementById('checkResult').style.display = 'none';
                 }
             } catch (error) {
                 hideLoader();
-                showMessage('error', 'Error: ' + error.message, 'checkMessage');
-            }
-        });
-
-        // Renew Key
-        document.getElementById('renewForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const username = document.getElementById('renewUsername').value.trim();
-            const duration = document.getElementById('renewDuration').value;
-
-            if (!username || !duration) {
-                showMessage('error', 'Please fill all fields!', 'renewMessage');
-                return;
-            }
-
-            showLoader('Renewing Key...', 'Extending key duration for ' + username);
-
-            try {
-                const response = await fetch('/api/renew-key', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, duration })
-                });
-
-                const data = await response.json();
-                hideLoader();
-
-                if (response.ok) {
-                    showMessage('success', data.message, 'renewMessage');
-                    displayRenewResult(data);
-                    document.getElementById('renewForm').reset();
-                } else {
-                    showMessage('error', data.error || 'Failed to renew key', 'renewMessage');
-                    document.getElementById('renewResult').style.display = 'none';
-                }
-            } catch (error) {
-                hideLoader();
-                showMessage('error', 'Error: ' + error.message, 'renewMessage');
+                showToast('error', 'Error', 'Error: ' + error.message);
             }
         });
 
@@ -1147,7 +1364,6 @@
             `;
             document.getElementById('checkResult').style.display = 'block';
             lucide.createIcons();
-            showMessage('success', 'Key status loaded successfully!', 'checkMessage');
         }
 
         function displayRenewResult(data) {
@@ -1184,15 +1400,7 @@
         function copyKey() {
             const keyCode = document.getElementById('keyCode').textContent;
             navigator.clipboard.writeText(keyCode).then(() => {
-                const copyBtn = document.querySelector('.copy-btn');
-                const originalHTML = copyBtn.innerHTML;
-                copyBtn.innerHTML = '<i data-lucide="check"></i><span>Copied!</span>';
-                lucide.createIcons();
-                
-                setTimeout(() => {
-                    copyBtn.innerHTML = originalHTML;
-                    lucide.createIcons();
-                }, 2000);
+                showToast('success', 'Copied!', 'Key copied to clipboard');
             });
         }
     </script>
