@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Script Key System</title>
+    <title>Script Hub - Key Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * {
             margin: 0;
@@ -11,30 +14,217 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #10a37f;
+            --primary-hover: #0d8b6d;
+            --secondary: #6e56cf;
+            --accent: #ff6b6b;
+            --success: #10a37f;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-dark: #0d0d0d;
+            --bg-card: #1a1a1a;
+            --bg-elevated: #262626;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --border: #2d2d2d;
+            --glow: rgba(16, 163, 127, 0.3);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(16, 163, 127, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(110, 86, 207, 0.08) 0%, transparent 50%);
+            animation: backgroundMove 20s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes backgroundMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(5%, 5%) rotate(2deg); }
+        }
+
+        /* Grid Pattern */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            max-width: 720px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.5s ease;
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            animation: containerFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes slideUp {
+        @keyframes containerFadeIn {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(40px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Header */
+        .header {
+            padding: 40px 40px 30px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .header-glow {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 100px;
+            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+            filter: blur(40px);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px var(--glow);
+        }
+
+        .logo svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
+        .header-text h1 {
+            font-size: 1.75em;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+
+        .header-text p {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            font-weight: 400;
+        }
+
+        /* Content */
+        .content {
+            padding: 32px 40px 40px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            padding: 4px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            margin-bottom: 32px;
+            border: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: tabFadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes tabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
             }
             to {
                 opacity: 1;
@@ -42,362 +232,706 @@
             }
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
+        /* Info Box */
+        .info-box {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
         }
 
-        .header h1 {
-            color: #667eea;
-            font-size: 2em;
-            margin-bottom: 10px;
+        .info-box-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
-        .header p {
-            color: #666;
+        .info-box-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-box-icon svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        .info-box-title {
+            font-weight: 600;
             font-size: 0.95em;
         }
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e0e0e0;
+        .info-box-content {
+            color: var(--text-secondary);
+            font-size: 0.875em;
+            line-height: 1.6;
         }
 
-        .tab {
-            padding: 12px 24px;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            color: #666;
-            transition: all 0.3s;
+        .info-box-content p {
+            margin-bottom: 6px;
         }
 
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+        .info-box-content p:last-child {
+            margin-bottom: 0;
         }
 
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
+        /* Form */
         .form-group {
             margin-bottom: 20px;
         }
 
-        .form-group label {
-            display: block;
-            color: #333;
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.95em;
+            font-size: 0.875em;
+            color: var(--text-primary);
         }
 
-        .form-group input,
-        .form-group select {
+        .form-label svg {
+            width: 16px;
+            height: 16px;
+            color: var(--primary);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-control {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
+            padding: 14px 16px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
             border-radius: 10px;
-            font-size: 1em;
-            transition: border-color 0.3s;
+            color: var(--text-primary);
+            font-size: 0.95em;
             font-family: inherit;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-control:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--glow);
         }
 
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        /* Button */
         .btn {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 14px 20px;
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
+            font-size: 0.95em;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 10px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-family: inherit;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--glow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn:disabled {
-            background: #ccc;
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
             cursor: not-allowed;
             transform: none;
         }
 
         .btn-renew {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            background: linear-gradient(135deg, var(--warning), #ea580c);
         }
 
         .btn-renew:hover {
-            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.4);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
         }
 
+        /* Loader */
+        .loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 13, 13, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader.show {
+            display: flex;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 20px;
+            border: 3px solid rgba(16, 163, 127, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .loader-subtext {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        /* Messages */
         .message {
-            padding: 15px;
+            padding: 16px 18px;
             border-radius: 10px;
             margin-top: 20px;
             display: none;
-            animation: fadeIn 0.3s;
+            animation: messageSlide 0.3s ease;
+            font-size: 0.9em;
+            font-weight: 500;
+            border: 1px solid;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.show {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .message svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
         }
 
         .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #c3e6cb;
+            background: rgba(16, 163, 127, 0.1);
+            color: var(--success);
+            border-color: rgba(16, 163, 127, 0.3);
         }
 
         .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.3);
         }
 
         .message.warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 2px solid #ffc107;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border-color: rgba(245, 158, 11, 0.3);
         }
 
+        /* Key Display */
         .key-display {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border: 2px dashed #667eea;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 24px;
+            animation: keyDisplayFade 0.4s ease;
         }
 
-        .key-display h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            text-align: center;
+        @keyframes keyDisplayFade {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .key-display-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .key-display-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .key-display-icon svg {
+            width: 22px;
+            height: 22px;
+            color: white;
+        }
+
+        .key-display-title {
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .key-code-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            position: relative;
         }
 
         .key-code {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
             font-family: 'Courier New', monospace;
-            font-size: 1.1em;
-            text-align: center;
-            color: #333;
-            font-weight: bold;
+            font-size: 0.95em;
+            color: var(--primary);
+            font-weight: 700;
             word-break: break-all;
-            border: 2px solid #e0e0e0;
-            margin-bottom: 10px;
+            letter-spacing: 1px;
         }
 
         .key-info {
-            margin-top: 15px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .key-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
             font-size: 0.9em;
         }
 
-        .key-info p {
-            margin-bottom: 8px;
-            color: #666;
+        .key-info-item:last-child {
+            border-bottom: none;
         }
 
-        .key-info strong {
-            color: #333;
+        .key-info-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .key-info-label svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .key-info-value {
+            color: var(--text-primary);
+            font-weight: 600;
         }
 
         .expiry-timer {
-            font-size: 1.2em;
-            color: #667eea;
-            font-weight: bold;
+            color: var(--primary);
+            font-weight: 700;
         }
 
         .expiry-warning {
-            color: #d97706;
+            color: var(--warning);
         }
 
         .expiry-danger {
-            color: #dc2626;
+            color: var(--danger);
         }
 
         .copy-btn {
             width: 100%;
-            padding: 10px;
-            background: #28a745;
+            padding: 12px;
+            background: var(--success);
             color: white;
             border: none;
             border-radius: 8px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9em;
+            font-family: inherit;
+        }
+
+        .copy-btn svg {
+            width: 16px;
+            height: 16px;
         }
 
         .copy-btn:hover {
-            background: #218838;
+            background: var(--primary-hover);
+            transform: translateY(-1px);
         }
 
-        .info-box {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 16px;
+            }
 
-        .info-box p {
-            color: #856404;
-            font-size: 0.9em;
-            margin-bottom: 5px;
+            .header {
+                padding: 30px 24px 24px;
+            }
+
+            .content {
+                padding: 24px;
+            }
+
+            .header-text h1 {
+                font-size: 1.5em;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                justify-content: flex-start;
+                padding: 12px 16px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <div class="loader-text" id="loaderText">Processing...</div>
+            <div class="loader-subtext" id="loaderSubtext">Please wait</div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
-            <h1>🔑 Key System</h1>
-            <p>Generate & Manage Your Keys</p>
+            <div class="header-glow"></div>
+            <div class="header-content">
+                <div class="logo">
+                    <i data-lucide="key-round"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Script Hub</h1>
+                    <p>Advanced Key Management System</p>
+                </div>
+            </div>
         </div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('generate')">Generate Key</button>
-            <button class="tab" onclick="switchTab('check')">Check Key</button>
-        </div>
-
-        <!-- GENERATE TAB -->
-        <div id="generateTab" class="tab-content active">
-            <div class="info-box">
-                <p><strong>📌 Informasi:</strong></p>
-                <p>• Masukkan username Roblox yang valid</p>
-                <p>• Pilih durasi key yang diinginkan</p>
-                <p>• Key akan tersimpan otomatis di GitHub</p>
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('generate')">
+                    <i data-lucide="sparkles"></i>
+                    <span>Generate</span>
+                </button>
+                <button class="tab" onclick="switchTab('check')">
+                    <i data-lucide="search"></i>
+                    <span>Check</span>
+                </button>
+                <button class="tab" onclick="switchTab('renew')">
+                    <i data-lucide="refresh-cw"></i>
+                    <span>Renew</span>
+                </button>
             </div>
 
-            <form id="keyForm">
-                <div class="form-group">
-                    <label for="username">Username Roblox</label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        placeholder="Masukkan username Roblox..." 
-                        required
-                    >
+            <!-- GENERATE TAB -->
+            <div id="generateTab" class="tab-content active">
+                <div class="info-box">
+                    <div class="info-box-header">
+                        <div class="info-box-icon">
+                            <i data-lucide="info"></i>
+                        </div>
+                        <div class="info-box-title">Generate Key Information</div>
+                    </div>
+                    <div class="info-box-content">
+                        <p>• Enter your valid Roblox username</p>
+                        <p>• Select key duration according to your needs</p>
+                        <p>• Keys are automatically saved securely</p>
+                        <p>• One user can only have 1 active key</p>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="duration">Durasi Key</label>
-                    <select id="duration" required>
-                        <option value="">Pilih durasi...</option>
-                        <option value="1">1 Hour (Testing)</option>
-                        <option value="24">1 Day</option>
-                        <option value="72">3 Days</option>
-                        <option value="168">7 Days</option>
-                        <option value="720">30 Days</option>
-                        <option value="permanent">Permanent</option>
-                    </select>
-                </div>
+                <form id="keyForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i data-lucide="user"></i>
+                            <span>Roblox Username</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            class="form-control"
+                            placeholder="Enter your Roblox username..." 
+                            required
+                        >
+                    </div>
 
-                <button type="submit" class="btn" id="submitBtn">
-                    Generate Key
-                </button>
-            </form>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i data-lucide="clock"></i>
+                            <span>Key Duration</span>
+                        </label>
+                        <select id="duration" class="form-control" required>
+                            <option value="">Select duration...</option>
+                            <option value="1">1 Hour (Testing)</option>
+                            <option value="24">1 Day</option>
+                            <option value="72">3 Days</option>
+                            <option value="168">7 Days</option>
+                            <option value="720">30 Days</option>
+                            <option value="permanent">Permanent</option>
+                        </select>
+                    </div>
 
-            <div id="message" class="message"></div>
-            <div id="keyDisplay" style="display: none;"></div>
-        </div>
+                    <button type="submit" class="btn" id="submitBtn">
+                        <i data-lucide="sparkles"></i>
+                        <span>Generate Key</span>
+                    </button>
+                </form>
 
-        <!-- CHECK KEY TAB -->
-        <div id="checkTab" class="tab-content">
-            <div class="info-box">
-                <p><strong>📌 Check & Renew:</strong></p>
-                <p>• Cek status key dan waktu remaining</p>
-                <p>• Renew key jika sisa waktu > 1 jam</p>
-                <p>• Key expired tidak bisa di-renew</p>
+                <div id="message" class="message"></div>
+                <div id="keyDisplay" style="display: none;"></div>
             </div>
 
-            <form id="checkForm">
-                <div class="form-group">
-                    <label for="checkUsername">Username Roblox</label>
-                    <input 
-                        type="text" 
-                        id="checkUsername" 
-                        placeholder="Masukkan username Roblox..." 
-                        required
-                    >
+            <!-- CHECK TAB -->
+            <div id="checkTab" class="tab-content">
+                <div class="info-box">
+                    <div class="info-box-header">
+                        <div class="info-box-icon">
+                            <i data-lucide="info"></i>
+                        </div>
+                        <div class="info-box-title">Check Key Information</div>
+                    </div>
+                    <div class="info-box-content">
+                        <p>• Check key status and remaining time</p>
+                        <p>• View complete key details</p>
+                        <p>• Monitor expiry date in realtime</p>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="checkKey">Key</label>
-                    <input 
-                        type="text" 
-                        id="checkKey" 
-                        placeholder="Paste key kamu disini..." 
-                        required
-                    >
+                <form id="checkForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i data-lucide="user"></i>
+                            <span>Roblox Username</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="checkUsername" 
+                            class="form-control"
+                            placeholder="Enter your Roblox username..." 
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i data-lucide="key"></i>
+                            <span>Key</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="checkKey" 
+                            class="form-control"
+                            placeholder="Paste your key here..." 
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <i data-lucide="search"></i>
+                        <span>Check Status</span>
+                    </button>
+                </form>
+
+                <div id="checkMessage" class="message"></div>
+                <div id="checkResult" style="display: none;"></div>
+            </div>
+
+            <!-- RENEW TAB -->
+            <div id="renewTab" class="tab-content">
+                <div class="info-box">
+                    <div class="info-box-header">
+                        <div class="info-box-icon">
+                            <i data-lucide="info"></i>
+                        </div>
+                        <div class="info-box-title">Renew Key Information</div>
+                    </div>
+                    <div class="info-box-content">
+                        <p>• Extend your active key duration</p>
+                        <p>• Renewal only allowed if remaining time > 1 hour</p>
+                        <p>• Select extension duration</p>
+                        <p>• Expired keys cannot be renewed</p>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn">
-                    Check Key
-                </button>
-            </form>
+                <form id="renewForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i data-lucide="user"></i>
+                            <span>Roblox Username</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="renewUsername" 
+                            class="form-control"
+                            placeholder="Enter your Roblox username..." 
+                            required
+                        >
+                    </div>
 
-            <div id="checkMessage" class="message"></div>
-            <div id="checkResult" style="display: none;"></div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i data-lucide="plus"></i>
+                            <span>Extension Duration</span>
+                        </label>
+                        <select id="renewDuration" class="form-control" required>
+                            <option value="">Select extension duration...</option>
+                            <option value="1">+1 Hour</option>
+                            <option value="24">+1 Day</option>
+                            <option value="72">+3 Days</option>
+                            <option value="168">+7 Days</option>
+                            <option value="720">+30 Days</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-renew">
+                        <i data-lucide="refresh-cw"></i>
+                        <span>Renew Key</span>
+                    </button>
+                </form>
+
+                <div id="renewMessage" class="message"></div>
+                <div id="renewResult" style="display: none;"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Tab switching
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Tab Switching
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             
-            if (tab === 'generate') {
-                document.querySelector('.tab:nth-child(1)').classList.add('active');
-                document.getElementById('generateTab').classList.add('active');
-            } else {
-                document.querySelector('.tab:nth-child(2)').classList.add('active');
-                document.getElementById('checkTab').classList.add('active');
-            }
+            const tabs = { 'generate': 0, 'check': 1, 'renew': 2 };
+            document.querySelectorAll('.tab')[tabs[tab]].classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
         }
 
-        // Generate Key Form
+        // Loader
+        function showLoader(text = 'Processing...', subtext = 'Please wait') {
+            document.getElementById('loaderText').textContent = text;
+            document.getElementById('loaderSubtext').textContent = subtext;
+            document.getElementById('loader').classList.add('show');
+        }
+
+        function hideLoader() {
+            document.getElementById('loader').classList.remove('show');
+        }
+
+        // Messages
+        function showMessage(type, text, elementId) {
+            const messageDiv = document.getElementById(elementId);
+            const icons = {
+                success: 'check-circle',
+                error: 'x-circle',
+                warning: 'alert-triangle'
+            };
+            
+            messageDiv.className = `message ${type} show`;
+            messageDiv.innerHTML = `
+                <i data-lucide="${icons[type]}"></i>
+                <span>${text}</span>
+            `;
+            lucide.createIcons();
+            
+            setTimeout(() => messageDiv.classList.remove('show'), 5000);
+        }
+
+        // Generate Key
         document.getElementById('keyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const username = document.getElementById('username').value.trim();
             const duration = document.getElementById('duration').value;
-            const submitBtn = document.getElementById('submitBtn');
-            const messageDiv = document.getElementById('message');
-            const keyDisplay = document.getElementById('keyDisplay');
 
             if (!username || !duration) {
-                showMessage('error', 'Mohon isi semua field!', 'message');
+                showMessage('error', 'Please fill all fields!', 'message');
                 return;
             }
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Generating...';
+            showLoader('Generating Key...', 'Creating secure key for ' + username);
             
             try {
                 const response = await fetch('/api/generate-key', {
@@ -407,23 +941,22 @@
                 });
 
                 const data = await response.json();
+                hideLoader();
 
                 if (response.ok) {
                     showMessage('success', data.message, 'message');
-                    displayKey(data.key, username, duration, data.expiresAt);
+                    displayKey(data.key, username, data.duration, data.expiresAtFormatted);
                     document.getElementById('keyForm').reset();
                 } else {
-                    showMessage('error', data.error || 'Gagal generate key', 'message');
+                    showMessage('error', data.error || 'Failed to generate key', 'message');
                 }
             } catch (error) {
-                showMessage('error', 'Terjadi kesalahan: ' + error.message, 'message');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Generate Key';
+                hideLoader();
+                showMessage('error', 'Error: ' + error.message, 'message');
             }
         });
 
-        // Check Key Form
+        // Check Key
         document.getElementById('checkForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -431,84 +964,111 @@
             const key = document.getElementById('checkKey').value.trim();
 
             if (!username || !key) {
-                showMessage('error', 'Mohon isi semua field!', 'checkMessage');
+                showMessage('error', 'Please fill all fields!', 'checkMessage');
                 return;
             }
+
+            showLoader('Checking Key...', 'Verifying key status...');
             
             try {
                 const response = await fetch(`/api/verify-key?key=${encodeURIComponent(key)}&username=${encodeURIComponent(username)}`);
                 const data = await response.json();
+                hideLoader();
 
                 if (data.valid) {
                     displayKeyStatus(data.data, key);
                 } else {
-                    showMessage('error', data.error || 'Key tidak valid', 'checkMessage');
+                    showMessage('error', data.error || 'Invalid key', 'checkMessage');
                     document.getElementById('checkResult').style.display = 'none';
                 }
             } catch (error) {
-                showMessage('error', 'Terjadi kesalahan: ' + error.message, 'checkMessage');
+                hideLoader();
+                showMessage('error', 'Error: ' + error.message, 'checkMessage');
             }
         });
 
-        // Renew Key Function
-        async function renewKey(key, username) {
-            const renewBtn = document.getElementById('renewBtn');
-            renewBtn.disabled = true;
-            renewBtn.textContent = 'Renewing...';
+        // Renew Key
+        document.getElementById('renewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('renewUsername').value.trim();
+            const duration = document.getElementById('renewDuration').value;
+
+            if (!username || !duration) {
+                showMessage('error', 'Please fill all fields!', 'renewMessage');
+                return;
+            }
+
+            showLoader('Renewing Key...', 'Extending key duration for ' + username);
 
             try {
                 const response = await fetch('/api/renew-key', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ key, username })
+                    body: JSON.stringify({ username, duration })
                 });
 
                 const data = await response.json();
+                hideLoader();
 
                 if (response.ok) {
-                    showMessage('success', data.message, 'checkMessage');
-                    // Refresh key status
-                    setTimeout(() => {
-                        document.getElementById('checkForm').dispatchEvent(new Event('submit'));
-                    }, 1000);
+                    showMessage('success', data.message, 'renewMessage');
+                    displayRenewResult(data);
+                    document.getElementById('renewForm').reset();
                 } else {
-                    showMessage('error', data.error || 'Gagal renew key', 'checkMessage');
+                    showMessage('error', data.error || 'Failed to renew key', 'renewMessage');
+                    document.getElementById('renewResult').style.display = 'none';
                 }
             } catch (error) {
-                showMessage('error', 'Terjadi kesalahan: ' + error.message, 'checkMessage');
-            } finally {
-                renewBtn.disabled = false;
-                renewBtn.textContent = '🔄 Renew Key';
+                hideLoader();
+                showMessage('error', 'Error: ' + error.message, 'renewMessage');
             }
-        }
+        });
 
-        function showMessage(type, text, elementId) {
-            const messageDiv = document.getElementById(elementId);
-            messageDiv.className = `message ${type} show`;
-            messageDiv.textContent = text;
-            
-            setTimeout(() => {
-                messageDiv.classList.remove('show');
-            }, 5000);
-        }
-
-        function displayKey(key, username, duration, expiresAt) {
-            const durationText = duration === 'permanent' ? 'Permanent' : `${duration} Hour(s)`;
-            const expiryText = expiresAt ? new Date(expiresAt).toLocaleString('id-ID') : 'Never';
-            
+        // Display Functions
+        function displayKey(key, username, duration, expiryText) {
             document.getElementById('keyDisplay').innerHTML = `
                 <div class="key-display">
-                    <h3>✅ Key Berhasil Dibuat!</h3>
-                    <div class="key-code" id="keyCode">${key}</div>
-                    <button class="copy-btn" onclick="copyKey()">📋 Copy Key</button>
+                    <div class="key-display-header">
+                        <div class="key-display-icon">
+                            <i data-lucide="check-circle"></i>
+                        </div>
+                        <div class="key-display-title">Key Generated Successfully!</div>
+                    </div>
+                    <div class="key-code-wrapper">
+                        <div class="key-code" id="keyCode">${key}</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyKey()">
+                        <i data-lucide="copy"></i>
+                        <span>Copy Key</span>
+                    </button>
                     <div class="key-info">
-                        <p><strong>Username:</strong> ${username}</p>
-                        <p><strong>Durasi:</strong> ${durationText}</p>
-                        <p><strong>Expired:</strong> ${expiryText}</p>
+                        <div class="key-info-item">
+                            <span class="key-info-label">
+                                <i data-lucide="user"></i>
+                                Username
+                            </span>
+                            <span class="key-info-value">${username}</span>
+                        </div>
+                        <div class="key-info-item">
+                            <span class="key-info-label">
+                                <i data-lucide="clock"></i>
+                                Duration
+                            </span>
+                            <span class="key-info-value">${duration}</span>
+                        </div>
+                        <div class="key-info-item">
+                            <span class="key-info-label">
+                                <i data-lucide="calendar"></i>
+                                Expires
+                            </span>
+                            <span class="key-info-value">${expiryText}</span>
+                        </div>
                     </div>
                 </div>
             `;
             document.getElementById('keyDisplay').style.display = 'block';
+            lucide.createIcons();
         }
 
         function displayKeyStatus(keyData, key) {
@@ -516,7 +1076,6 @@
             const expiresAt = keyData.expiresAt ? new Date(keyData.expiresAt) : null;
             
             let timeRemaining = '';
-            let canRenew = false;
             let timerClass = 'expiry-timer';
             
             if (expiresAt) {
@@ -525,16 +1084,9 @@
                 const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
                 
                 if (diffMs > 0) {
-                    timeRemaining = `${diffHours} jam ${diffMins} menit`;
-                    
-                    // Can renew if > 1 hour remaining
-                    canRenew = diffHours >= 1;
-                    
-                    if (diffHours < 1) {
-                        timerClass += ' expiry-danger';
-                    } else if (diffHours < 24) {
-                        timerClass += ' expiry-warning';
-                    }
+                    timeRemaining = `${diffHours}h ${diffMins}m`;
+                    if (diffHours < 1) timerClass += ' expiry-danger';
+                    else if (diffHours < 24) timerClass += ' expiry-warning';
                 } else {
                     timeRemaining = 'EXPIRED';
                     timerClass += ' expiry-danger';
@@ -543,46 +1095,103 @@
                 timeRemaining = 'PERMANENT';
             }
 
-            const renewButton = canRenew ? `
-                <button class="btn btn-renew" id="renewBtn" onclick="renewKey('${key}', '${keyData.username}')">
-                    🔄 Renew Key (+${keyData.duration} Hours)
-                </button>
-            ` : expiresAt ? `
-                <div class="info-box" style="margin-top: 15px;">
-                    <p><strong>⚠️ Cannot Renew:</strong></p>
-                    <p>Renew hanya bisa dilakukan jika sisa waktu lebih dari 1 jam</p>
-                </div>
-            ` : '';
-
             document.getElementById('checkResult').innerHTML = `
                 <div class="key-display">
-                    <h3>📊 Key Status</h3>
-                    <div class="key-info">
-                        <p><strong>Username:</strong> ${keyData.username}</p>
-                        <p><strong>Key:</strong> <span class="key-code" style="display:inline; padding:5px;">${key}</span></p>
-                        <p><strong>Duration:</strong> ${keyData.duration === 'permanent' ? 'Permanent' : keyData.duration + ' Hours'}</p>
-                        <p><strong>Created:</strong> ${new Date(keyData.createdAt).toLocaleString('id-ID')}</p>
-                        <p><strong>Expires:</strong> ${expiresAt ? expiresAt.toLocaleString('id-ID') : 'Never'}</p>
-                        <p><strong>Time Remaining:</strong> <span class="${timerClass}">${timeRemaining}</span></p>
+                    <div class="key-display-header">
+                        <div class="key-display-icon">
+                            <i data-lucide="shield-check"></i>
+                        </div>
+                        <div class="key-display-title">Key Status</div>
                     </div>
-                    ${renewButton}
+                    <div class="key-code-wrapper">
+                        <div class="key-code">${key}</div>
+                    </div>
+                    <div class="key-info">
+                        <div class="key-info-item">
+                            <span class="key-info-label">
+                                <i data-lucide="user"></i>
+                                Username
+                            </span>
+                            <span class="key-info-value">${keyData.username}</span>
+                        </div>
+                        <div class="key-info-item">
+                            <span class="key-info-label">
+                                <i data-lucide="clock"></i>
+                                Duration
+                            </span>
+                            <span class="key-info-value">${keyData.duration === 'permanent' ? 'Permanent' : keyData.duration + ' Hours'}</span>
+                        </div>
+                        <div class="key-info-item">
+                            <span class="key-info-label">
+                                <i data-lucide="calendar-plus"></i>
+                                Created
+                            </span>
+                            <span class="key-info-value">${new Date(keyData.createdAt).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="key-info-item">
+                            <span class="key-info-label">
+                                <i data-lucide="calendar-x"></i>
+                                Expires
+                            </span>
+                            <span class="key-info-value">${expiresAt ? expiresAt.toLocaleString('id-ID') : 'Never'}</span>
+                        </div>
+                        <div class="key-info-item">
+                            <span class="key-info-label">
+                                <i data-lucide="timer"></i>
+                                Remaining
+                            </span>
+                            <span class="${timerClass}">${timeRemaining}</span>
+                        </div>
+                    </div>
                 </div>
             `;
             document.getElementById('checkResult').style.display = 'block';
-            showMessage('success', 'Key status loaded!', 'checkMessage');
+            lucide.createIcons();
+            showMessage('success', 'Key status loaded successfully!', 'checkMessage');
+        }
+
+        function displayRenewResult(data) {
+            document.getElementById('renewResult').innerHTML = `
+                <div class="key-display">
+                    <div class="key-display-header">
+                        <div class="key-display-icon">
+                            <i data-lucide="check-circle"></i>
+                        </div>
+                        <div class="key-display-title">Key Renewed Successfully!</div>
+                    </div>
+                    <div class="key-info">
+                        <div class="key-info-item">
+                            <span class="key-info-label">
+                                <i data-lucide="calendar"></i>
+                                New Expiry
+                            </span>
+                            <span class="key-info-value">${new Date(data.newExpiresAt).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="key-info-item">
+                            <span class="key-info-label">
+                                <i data-lucide="repeat"></i>
+                                Renew Count
+                            </span>
+                            <span class="key-info-value">${data.renewCount} times</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('renewResult').style.display = 'block';
+            lucide.createIcons();
         }
 
         function copyKey() {
             const keyCode = document.getElementById('keyCode').textContent;
             navigator.clipboard.writeText(keyCode).then(() => {
                 const copyBtn = document.querySelector('.copy-btn');
-                const originalText = copyBtn.textContent;
-                copyBtn.textContent = '✅ Copied!';
-                copyBtn.style.background = '#218838';
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i data-lucide="check"></i><span>Copied!</span>';
+                lucide.createIcons();
                 
                 setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                    copyBtn.style.background = '#28a745';
+                    copyBtn.innerHTML = originalHTML;
+                    lucide.createIcons();
                 }, 2000);
             });
         }
